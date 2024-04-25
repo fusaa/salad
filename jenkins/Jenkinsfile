@@ -1,0 +1,42 @@
+
+pipeline {
+    agent any
+    
+    environment {
+        // Get the path for the credentials stored w/ Jenkins        
+        KEYS = credentials('keys_teq_craw')
+    }
+    stages {
+        stage("Clean Up"){
+            steps{
+                deleteDir()
+            }
+        }
+
+        stage('Clone repo') {
+            steps{
+                script {
+                    sh 'git clone https://github.com/fusaa/teq_craw.git .'
+                    sh 'ls -l'
+                }                
+            }
+        }
+        
+        stage('Get Credentials file w/ Jenkins') {
+            steps {
+                sh("cp $KEYS ./")
+            }
+        }
+
+        stage('Docker Image'){
+            steps{
+                sh 'docker build -t teqc .'
+
+            }
+        }
+
+
+
+    }
+
+}
