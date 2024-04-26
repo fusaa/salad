@@ -82,6 +82,11 @@ resource "aws_instance" "dockerJenkinsInstance" {
                 # docker run -d -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts
                 # docker run -d --restart unless-stopped -p 8080:8080 -p 50000:50000 -v jenkins_home:/var/jenkins_home jenkins/jenkins:lts >> ud_jenk_out.txt
                 docker run -d --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock -v jenkins_home:/var/jenkins_home -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts >> ud_jenk_out.txt
+                
+                # TODO: list docker ctns, install docker in jenkins ctns, 
+                # 
+
+                
                 chmod 666 /var/run/docker.sock
                 
                 EOF
