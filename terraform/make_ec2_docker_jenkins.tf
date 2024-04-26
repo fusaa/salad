@@ -54,7 +54,8 @@ resource "aws_security_group" "sg_dockerJenkinsInstance" {
 
 resource "aws_instance" "dockerJenkinsInstance" {
   ami           = "ami-0c101f26f147fa7fd"
-  instance_type = "t2.micro"
+  /* instance_type = "t2.micro" */
+  instance_type = "t2.medium"
   key_name      = aws_key_pair.auth.key_name
   security_groups = [aws_security_group.sg_dockerJenkinsInstance.name]
 
