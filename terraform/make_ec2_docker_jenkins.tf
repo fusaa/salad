@@ -84,7 +84,9 @@ resource "aws_instance" "dockerJenkinsInstance" {
                 docker run -d --restart unless-stopped -v /var/run/docker.sock:/var/run/docker.sock -v jenkins_home:/var/jenkins_home -p 8080:8080 -p 50000:50000 jenkins/jenkins:lts >> ud_jenk_out.txt
                 
                 # TODO: list docker ctns, install docker in jenkins ctns, 
-                # 
+                
+                ct_id=$(docker container ls -ql)
+                docker exec -u root -it $ct_id bash -c "apt-get update && apt-get install -y docker.io"
 
                 
                 chmod 666 /var/run/docker.sock
