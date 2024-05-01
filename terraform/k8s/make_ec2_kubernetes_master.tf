@@ -105,6 +105,7 @@ resource "aws_instance" "k8sInstance" {
                 O_EOF
 
 
+
   tags = {
     Name = "k8sInstance"
   }
