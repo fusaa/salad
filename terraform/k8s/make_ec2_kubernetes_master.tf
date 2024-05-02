@@ -80,6 +80,17 @@ resource "aws_instance" "k8sInstance" {
                 gpgkey=https://pkgs.k8s.io/core:/stable:/v1.29/rpm/repodata/repomd.xml.key 
                 I_EOF
 
+
+                cat <<-II_EOF >  /etc/sysctl.d/k8s.conf
+                net.bridge.bridge-nf-call-ip6tables = 1
+                net.bridge.bridge-nf-call-iptables = 1
+                II_EOF
+
+                sysctl --system
+                setenforce 0
+
+
+
                 # Kubernetes tools:
                 yum install -y kubelet kubeadm kubectl
 
@@ -88,6 +99,7 @@ resource "aws_instance" "k8sInstance" {
                 # Disable swap and disable startup swap fstab
                 swapoff -a
                 sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+                sleep 2
 
                 # kubelet service (enable+init)
                 systemctl enable --now kubelet
@@ -99,7 +111,14 @@ resource "aws_instance" "k8sInstance" {
                 kubeadm init --pod-network-cidr=10.240.0.0/16 --ignore-preflight-errors=NumCPU,Mem
                 
                 # Export the KUBECONFIG
-                export KUBECONFIG=/etc/kubernetes/admin.conf
+                # export KUBECONFIG=/etc/kubernetes/admin.conf
+
+                mkdir -p $HOME/.kube
+                sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+
+                #calico
+                kubectl apply -f https://docs.projectcalico.org/manifest/calico.yaml
+                
                 
                 
                 O_EOF
