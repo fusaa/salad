@@ -4,9 +4,7 @@ provider "aws" {
   secret_key = ""
 }
 
-
-
-/* for some reason this parts returns an error always on the 1st run, 2nd 'terraform plan' works fine*/
+/*  returns an error always on the 1st run, 2nd 'terraform plan' works fine*/
 data "external" "generate_ssh_key" {
   program = ["bash", "-c", <<-EOF
     mkdir -p ${path.module}/.ssh
@@ -22,9 +20,6 @@ resource "aws_key_pair" "auth" {
   key_name   = "ec2-key-pair"
   public_key = data.external.generate_ssh_key.result["public_key"]
 }
-
-
-
 
 resource "aws_security_group" "sg_dockerJenkinsInstance" {
   name        = "sg_dockerJenkinsInstance"
@@ -88,7 +83,6 @@ resource "aws_instance" "dockerJenkinsInstance" {
                 
                 ct_id=$(docker container ls -ql)
                 docker exec -u root -it $ct_id bash -c "apt-get update && apt-get install -y docker.io"
-
                 
                 chmod 666 /var/run/docker.sock
                 
@@ -100,13 +94,10 @@ resource "aws_instance" "dockerJenkinsInstance" {
   }
 }
 
-
-
 resource "aws_eip" "dockerJenkinsInstance" {
   instance = aws_instance.dockerJenkinsInstance.id
   domain      = "vpc"
 }
-
 
 output "instance_ip" {
   value = aws_eip.dockerJenkinsInstance.public_ip
